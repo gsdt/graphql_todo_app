@@ -5,6 +5,7 @@
 * GraphQL
 * Sequelize
 * Koa
+* MySQL
 
 ## Feature
 * Signup
