@@ -53,8 +53,6 @@ var schema = new GraphQLSchema({
                 resolve() {
                     return db.User.findAll({
                         include: [db.Task]
-                    }).then((users) => {
-                        return users;
                     });
                 }
             },
@@ -67,8 +65,6 @@ var schema = new GraphQLSchema({
                         where: {
                             userId: userId
                         }
-                    }).then((tasks) => {
-                        return tasks;
                     });
                 }
             }
@@ -119,12 +115,11 @@ var schema = new GraphQLSchema({
                         }
     
                         const token = jwt.sign({ userId: user.id }, APP_SECRET)
-    
                         return {
                             token,
                             user,
                         }
-                    })
+                    });
                     return token;
                 }
             },
@@ -152,23 +147,20 @@ var schema = new GraphQLSchema({
                 },
                 resolve: async (parent, args, context) => {
                     const userId = getUserId(context)
-                    const updated_task = db.Task.findOne({
+                    const task = db.Task.findOne({
                         where: {
-                            id: id,
+                            id: args.id,
                             userId: userId
                         }
                     }).then(task => {
-                        if(task === null) {
+                        if (task === null) {
                             throw new Error("Invalid task")
                         }
-                        task.update(
-                            ...args
-                        ).then (updated_task => {
-                            return updated_task
-                        })
-                    })
+                        task = task.update(args);
+                        return task;
+                    });
 
-                    console.log(updated_task)
+                    return task;
                 }
             }            
         })
